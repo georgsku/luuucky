@@ -1,0 +1,248 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import '@fontsource/fira-mono';
+
+:root {
+	--font-body: "proxima-nova",sans-serif,
+		Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+	font-family: var(--font-body);
+
+	--cardin-green-50: #effef5;
+	--cardin-green-100: #dafee9;
+	--cardin-green-200: #b6fcd5;
+	--cardin-green-300: #7ef7b4;
+	--cardin-green-400: #3fe98c;
+	--cardin-green-500: #16d16b;
+	--cardin-green-600: #0bae55;
+	--cardin-green-700: #0d8846;
+	--cardin-green-800: #106b3b;
+	--cardin-green-900: #0f5832;
+	--cardin-green-950: #02341b;
+
+	--red-50: #fef3f2;
+    --red-100: #ffe3e1;
+    --red-200: #ffcbc8;
+    --red-300: #ffa7a2;
+    --red-400: #fd6a62;
+    --red-500: #f5473e;
+    --red-600: #e3291f;
+    --red-700: #bf1f16;
+    --red-800: #9e1d16;
+    --red-900: #831e19;
+    --red-950: #470b08;
+
+	--java-50: #effefc;
+	--java-100: #cafdf8;
+	--java-200: #95faf1;
+	--java-300: #58f0e9;
+	--java-400: #26dbd8;
+	--java-500: #0dbcbc;
+	--java-600: #07979a;
+	--java-700: #0b767a;
+	--java-800: #0e5d61;
+	--java-900: #114d50;
+	--java-950: #022d31;
+
+	--orange-50: #fff9ed;
+    --orange-100: #fff1d5;
+    --orange-200: #fee0aa;
+    --orange-300: #fdc162;
+    --orange-400: #fba53c;
+    --orange-500: #f98a16;
+    --orange-600: #ea6f0c;
+    --orange-700: #c2540c;
+    --orange-800: #9a4212;
+    --orange-900: #7c3812;
+    --orange-950: #431a07;
+
+	--pink-50: #fdf2f7;
+    --pink-100: #fce7f1;
+    --pink-200: #fbcfe4;
+    --pink-300: #f9a8cd;
+    --pink-400: #f68dbb;
+    --pink-500: #ec488b;
+    --pink-600: #db2768;
+    --pink-700: #be184f;
+    --pink-800: #9d1742;
+    --pink-900: #83183a;
+    --pink-950: #50071e;
+
+	--secondary-white: #FBF0D1;
+	--red: #E63950;
+}
+
+body[data-color-scheme="green"] {
+	--secondary-white: var(--cardin-green-50);
+	--main-50: var(--cardin-green-50);
+	--main-100: var(--cardin-green-100);
+	--main-200: var(--cardin-green-200);
+	--main-300: var(--cardin-green-300);
+	--main-400: var(--cardin-green-400);
+	--main-500: var(--cardin-green-500);
+	--main-600: var(--cardin-green-600);
+	--main-700: var(--cardin-green-700);
+	--main-800: var(--cardin-green-800);
+	--main-900: var(--cardin-green-900);
+	--main-950: var(--cardin-green-950);
+}
+
+body[data-color-scheme="blue"] {
+	--secondary-white: var(--java-50);
+	--main-50: var(--java-50);
+	--main-100: var(--java-100);
+	--main-200: var(--java-200);
+	--main-300: var(--java-300);
+	--main-400: var(--java-400);
+	--main-500: var(--java-500);
+	--main-600: var(--java-600);
+	--main-700: var(--java-700);
+	--main-800: var(--java-800);
+	--main-900: var(--java-900);
+	--main-950: var(--java-950);
+}
+body[data-color-scheme="red"] {
+	--secondary-white: var(--red-50);
+	--main-50: var(--red-50);
+	--main-100: var(--red-100);
+	--main-200: var(--red-200);
+	--main-300: var(--red-300);
+	--main-400: var(--red-400);
+	--main-500: var(--red-500);
+	--main-600: var(--red-600);
+	--main-700: var(--red-700);
+	--main-800: var(--red-800);
+	--main-900: var(--red-900);
+	--main-950: var(--red-950);
+}
+
+body[data-color-scheme="orange"] {
+	--secondary-white: var(--orange-50);
+	--main-50: var(--orange-50);
+	--main-100: var(--orange-100);
+	--main-200: var(--orange-200);
+	--main-300: var(--orange-300);
+	--main-400: var(--orange-400);
+	--main-500: var(--orange-500);
+	--main-600: var(--orange-600);
+	--main-700: var(--orange-700);
+	--main-800: var(--orange-800);
+	--main-900: var(--orange-900);
+	--main-950: var(--orange-950);
+}
+
+body[data-color-scheme="pink"] {
+	--secondary-white: var(--pink-50);
+	--main-50: var(--pink-50);
+	--main-100: var(--pink-100);
+	--main-200: var(--pink-200);
+	--main-300: var(--pink-300);
+	--main-400: var(--pink-400);
+	--main-500: var(--pink-500);
+	--main-600: var(--pink-600);
+	--main-700: var(--pink-700);
+	--main-800: var(--pink-800);
+	--main-900: var(--pink-900);
+	--main-950: var(--pink-950);
+}
+  
+
+body {
+	min-height: 100vh;
+	margin: 0;
+	background-color: var(--main-600);
+	color: var(--main-50);
+}
+
+h1,
+h2,
+p {
+	font-weight: 400;
+}
+
+p {
+	line-height: 1.5;
+}
+
+a {
+	color: var(--color-theme-1);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+h1 {
+	font-size: 2rem;
+	text-align: center;
+}
+
+h2 {
+	font-size: 1rem;
+}
+
+pre {
+	font-size: 16px;
+	font-family: var(--font-mono);
+	background-color: rgba(255, 255, 255, 0.45);
+	border-radius: 3px;
+	box-shadow: 2px 2px 6px rgb(255 255 255 / 25%);
+	padding: 0.5em;
+	overflow-x: auto;
+	color: var(--color-text);
+}
+
+input,
+button {
+	font-size: inherit;
+	font-family: inherit;
+}
+
+button:focus:not(:focus-visible) {
+	outline: none;
+}
+
+
+@media (min-width: 720px) {
+	h1 {
+		font-size: 2.4rem;
+	}
+}
+
+.visually-hidden {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: auto;
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+	white-space: nowrap;
+}
+
+.startButton {
+	font-weight: bold;
+	background: var(--main-900);
+	border: none;
+	color: var(--main-100);
+	border-radius: 0.5rem;
+	padding: 1rem 2rem;
+	font-size: 2rem;
+	width: fit-content;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.fadeIn {animation: fadeIn 0.5s forwards;}
+.fadeOut {animation: fadeOut 0.5s forwards;}
+@keyframes fadeIn {
+  from { opacity: 0;}
+  to {opacity: 1;}
+}
+@keyframes fadeOut {
+  from { opacity: 1;}
+  to {opacity: 0;}
+}
