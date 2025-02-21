@@ -9,6 +9,7 @@
 	import { onMount } from 'svelte';
 	import { confetti } from '@neoconfetti/svelte';
 	import Popover from '../Popover.svelte';
+	import BezierEasing from 'bezier-easing';
 	
 	let { data } = $props();
 
@@ -27,12 +28,27 @@
 	
 	let totalDuration = $state(5);
 	let totalFrame = $derived(totalDuration * 60);
+	let totalRounds = $state(10)
 
 	let containerData;
 	let inAnimation = false;
+	let ticketPool = []
+	let winnerElement;
 
 	let listData = $derived.by(() => {
-		const navnList = csvData.map(item => item.navn);
+		const navnList = csvData.map(item => item.name);
+		
+		csvData.forEach((entry) => {
+			if (entry.name) {
+				if (entry.amount) {
+					for (let index = 0; index < entry.amount; index++) {
+						ticketPool.push(entry.name)
+					}
+				} else {
+					ticketPool.push(entry.name)
+				}
+			}
+		})
 
 		if (navnList.length === 0) {
 			return [];
@@ -45,25 +61,6 @@
 
 		return data;
 	});
-
-	function start() {
-		if (inAnimation) return;
-		inAnimation = true;
-		fireConfetti = false;
-
-		const container = document.querySelector(".slot-container")
-		containerData = {
-			element: container,
-			uls: container.querySelectorAll("ul"),
-			randomTransform: 1000,
-			currentTime: 0,
-			increment: 1 / totalFrame,
-		}
-		preAnimation = false
-
-		spin(containerData);
-	}
-
 
 	function handleFileUpload(e) {
 		const file = e.target.files[0]
@@ -92,15 +89,53 @@
 		reader.readAsText(file);
 	}
 
+	function drawWinner() {
+		return ticketPool[Math.floor(Math.random()*ticketPool.length)];
+	}
+
+	function start() {
+		if (inAnimation) return;
+		if (winnerElement) {
+			winnerElement.classList.remove("animate__tada")
+			winnerElement = null
+		}
+
+		inAnimation = true;
+		fireConfetti = false;
+
+		console.log(totalRounds);
+		const container = document.querySelector(".slot-container")
+		containerData = {
+			element: container,
+			uls: container.querySelectorAll("ul"),
+			randomTransform: totalRounds * 100,
+			currentTime: 0,
+			increment: 1 / totalFrame,
+		}
+
+		preAnimation = false
+
+		spin(containerData);
+	}
+
+	function setDataFromText() {
+		const input = document.getElementById("text-data")
+	}
+
 	function spin(containerData) {
-		const random = Math.floor(Math.random() * listData.length) / listData.length;
-		containerData.randomTransform += random * 100;
+		const winner = drawWinner()
+		
+		const elements = Array.from(Array.from(containerData.uls)[0].querySelectorAll("li"))
+		winnerElement = elements.find(el => el.dataset.name === winner)
+		const winnerIndex = elements.indexOf(winnerElement) - 1
+
+		const offset = 2 * 1 / elements.length
+		containerData.randomTransform += (1 - winnerIndex / elements.length + offset) * 100;
+		
 		anim(containerData)
 	}
 
-	const bezier = (t, initial, p1, p2, final) => {
-		return (1 - t) * (1 - t) * (1 - t) * initial + 3 * (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * final;
-	};
+	const easing = BezierEasing(.2,0,0,1);
 
 	function anim(containerData) {
 		const { currentTime, increment, randomTransform, uls } = containerData;
@@ -109,8 +144,10 @@
 			cancelAnimationFrame(containerData.frame);
 			inAnimation = false;
 			fireConfetti = true
+			winnerElement.classList.add("animate__tada")
 		} else {
-			let currentValue = 100 - (bezier( containerData.currentTime, 0, 0 * randomTransform, 1 * randomTransform, randomTransform ) % 100); 
+			let bezier = easing(containerData.currentTime)
+			let currentValue = 100 - (bezier * randomTransform % 100); 
 			containerData.currentTime += containerData.increment;
 
 			Array.from(uls).forEach((ul) => {
@@ -125,19 +162,22 @@
 		if (settings.length === 0) return
 		totalDuration = settings.totalDuration
 		winningAnimation = settings.winningAnimation
+		totalRounds = settings.totalRounds
 	}
 
 
 	function applySettingsToForm(settings) {
 		if (settings.length === 0) return
 		document.getElementById('animationLengthInput').value = settings.totalDuration;
-		document.getElementById('toggleWinningAnimation').value = settings.winningAnimation;
+		document.getElementById('toggleWinningAnimation').checked = settings.winningAnimation;
+		document.getElementById('totalRounds').value = settings.totalRounds;
 	}
 
   	function getSettingsFromForm() {
 		return {
 			totalDuration: parseInt(document.getElementById('animationLengthInput').value, 10),
-			winningAnimation: parseInt(document.getElementById('toggleWinningAnimation').value, 10),
+			totalRounds: parseInt(document.getElementById('totalRounds').value, 10),
+			winningAnimation: document.getElementById('toggleWinningAnimation').checked,
 		};
 	}
 </script>
@@ -145,15 +185,16 @@
 <div class="grow flex flex-col justify-center overflow-hidden max-w-screen-lg mx-auto w-full">
 	{#if listData.length > 0}
 		<div class="slot-container" data-pre-animation={preAnimation} style="--count:{listData.length};">
+			<div class="faded-container"></div>
 			{#if listData.length > 0}
 				<ul>
 					{#each listData as navn}
-						<li>{navn}</li>
+						<li data-name={navn}>{navn}</li>
 					{/each}
 				</ul>
 				<ul>
 					{#each listData as navn}
-						<li>{navn}</li>
+						<li data-name={navn}>{navn}</li>
 					{/each}
 				</ul>
 			{/if}
@@ -189,19 +230,22 @@
 
 		<p class="my-2">skriv inn data manuelt (Skill med komma)</p>
 		<div class="flex">
-			<input type="text" placeholder="Skriv navn her (f.eks. Ola, Kari, Per)"  id="default-input" class="bg-main-50 border border-main-800 text-main-900 text-sm rounded-lg focus:ring-main-500 focus:border-main-500 block w-full p-2.5">
-			<button type="button" class="text-white bg-main-700 hover:bg-main-800 focus:ring-4 focus:ring-main-300 font-medium rounded-lg text-sm px-5 py-2.5 ml-1 focus:outline-none shrink-0 ">Sett data</button>
+			<input id="text-data" type="text" placeholder="Skriv navn her (f.eks. Ananas, Banan, Eple)" class="bg-main-50 border border-main-800 text-main-900 text-sm rounded-lg focus:ring-main-500 focus:border-main-500 block w-full p-2.5">
+			<button type="button" onclick={setDataFromText} class="text-white bg-main-700 hover:bg-main-800 focus:ring-4 focus:ring-main-300 font-medium rounded-lg text-sm px-5 py-2.5 ml-1 focus:outline-none shrink-0 ">Sett data</button>
 		</div>
 	{/if}
 </div>
 
-<Popover name="slots" applySettingsToStates={applySettingsToStates} getSettingsFromForm={getSettingsFromForm} applySettingsToForm={applySettingsToForm}>
+<Popover name="list" applySettingsToStates={applySettingsToStates} getSettingsFromForm={getSettingsFromForm} applySettingsToForm={applySettingsToForm}>
 	<label for="animationLengthInput" class="mb-2 text-sm font-medium text-gray-900 inline-block">Animation Length</label>
 	<input id="animationLengthInput" type="number" min="2" max="15" bind:value={totalDuration}> 
 	<label for="animationLengthInput" class="mb-2 text-sm font-medium text-gray-900 inline-block">(seconds)</label>
 	<br>
 	<label for="toggleWinningAnimation" class="mb-2 text-sm font-medium text-gray-900 inline-block">Enable Winning Animation</label>
 	<input id="toggleWinningAnimation" type="checkbox" bind:checked={winningAnimation}>
+	<br>
+	<label for="totalRounds" class="mb-2 text-sm font-medium text-gray-900 inline-block">Antall runder</label>
+	<input id="totalRounds" type="number" min="1" max="20" bind:value={totalRounds}> 
 </Popover>
 
 {#if fireConfetti && winningAnimation}
@@ -218,12 +262,43 @@
 {/if}
 
 <style>
+	.faded-container {
+		position: absolute;
+		inset: 0;
+
+		&::after {
+			z-index: 10;
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 30%;
+			background-image: linear-gradient(to top, rgba(255, 255, 255, 0), var(--main-600) 90%);
+		}
+
+		&::before {
+			z-index: 10;
+			content: "";
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 30%;
+			background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--main-600) 90%);
+		}
+	}
+	
 	.slot-container {
+		--line-height: 150%;
+		--font-size: 4rem;
+		--li-count: 7;
+
 		position: relative;
 		width: 100%;
 		overflow: hidden;
 		color: var(--seconday-white);
-		max-height: calc(5rem * 11);	
+		max-height: calc(6rem * var(--li-count));	
 		display: flex;
 		flex-direction: column;
 
@@ -231,7 +306,7 @@
 			content: "";
 			position: absolute;
 			width: 100%;
-			top: calc(50% - 2.5rem);
+			top: calc(50% - 3rem);
 			border: 2px solid var(--main-700);
 		}
 
@@ -239,7 +314,7 @@
 			content: "";
 			position: absolute;
 			width: 100%;
-			bottom: calc(50% - 2.5rem);
+			bottom: calc(50% - 3rem);
 			border: 2px solid var(--main-700);
 		}
 
@@ -256,12 +331,17 @@
 			list-style: none;
 
 			li {
-				font-size: 4rem;
-				line-height: 1em;
-				padding: 0.5rem 0;
+				font-size: var(--font-size);
+				line-height: var(--line-height);
 				text-align: center;
 			}
 		}
+	}
+
+	:global(.animate__tada) {
+		animation-name: tada;
+		animation-duration: 1s;
+		animation-iteration-count: 5;
 	}
 
 
@@ -272,6 +352,34 @@
 
 		to {
 			transform: translateY(0);
+		}
+	}
+
+
+	@keyframes tada {
+		0% {
+			-webkit-transform: scaleX(1);
+			transform: scaleX(1)
+		}
+
+		10%,20% {
+			-webkit-transform: scale3d(.9,.9,.9) rotate(-3deg);
+			transform: scale3d(.9,.9,.9) rotate(-3deg)
+		}
+
+		30%,50%,70%,90% {
+			-webkit-transform: scale3d(1.1,1.1,1.1) rotate(3deg);
+			transform: scale3d(1.1,1.1,1.1) rotate(3deg)
+		}
+
+		40%,60%,80% {
+			-webkit-transform: scale3d(1.1,1.1,1.1) rotate(-3deg);
+			transform: scale3d(1.1,1.1,1.1) rotate(-3deg)
+		}
+
+		to {
+			-webkit-transform: scaleX(1);
+			transform: scaleX(1)
 		}
 	}
 

@@ -14,6 +14,8 @@
 	let gameType = $state("books");
 	let logOpen = $state(false);
 
+	let errorMessage = $state("");
+
 	let book_limit;
 	let books;
 
@@ -44,8 +46,9 @@
 		book_limit = parseInt(document.getElementById("book_limit").value)
 
 		if(books == 0 || book_limit == 0){
-			//document.querySelector(".details").prepend("<p class='info wrong-range'>" + __('Woops! Invalid range...')  + "</p>")	
+			errorMessage = "Invalid range"
 		} else {
+			errorMessage = null
 			inGame = true
 			next()
 		}
@@ -56,8 +59,9 @@
 		limit = parseInt(document.getElementById("limit").value)
 
 		if(from >= limit){
-			//document.querySelector(".details").prepend("<p class='info wrong-range'>" + __('Woops! Invalid range...') + "</p>")	
+			errorMessage = "Invalid range"
 		} else {
+			errorMessage = null
 			inGame = true
 			next()
 		}
@@ -107,7 +111,7 @@
 
 <div class="screen">
 	{#if inGame }
-		<svg id="exit-game" class="h-12 w-12 cursor-pointer" xmlns="http://www.w3.org/2000/svg" onclick={exitGame} width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+		<svg id="exit-game" class="h-12 w-12 cursor-pointer" xmlns="http://www.w3.org/2000/svg" onclick={exitGame} width="32" height="32" fill="var(--main-700)" viewBox="0 0 256 256"><path d="M165.66,101.66,139.31,128l26.35,26.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
 
 		<div class="grid place-items-center" onclick={next}>
 			<div id="number">
@@ -138,27 +142,35 @@
 
 	{:else}
 		<div class="grow flex flex-col justify-center overflow-hidden">
+			{#if errorMessage }
+			<div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:text-red-400" role="alert">
+				<span class="font-medium">{errorMessage}</span>
+			</div>
+			{/if }
+
 			<p class="text-3xl uppercase text-[#666] font-extralight mt-4" data-game-type={gameType}><a data-type="books" onclick={setGameType}>Bøker</a> eller <a data-type="numeral" onclick={setGameType}>bare tall?</a></p>
 
 			<div class="options mt-2 text-4xl">
+		
+				<p></p>
 				<div class="inline-flex">
 					{#if gameType === "books" }
-						<label>Bøker</label>
-						<input type="text" name="books" id="books" value="10" autocomplete="off">
+						<label class="rounded-l-md">Bøker</label>
+						<input class="rounded-r-md" type="text" name="books" id="books" value="10" autocomplete="off">
 					{:else}
-						<label>Fra</label>
-						<input type="text" name="from" id="from" value="1" autocomplete="off">
+						<label class="rounded-l-md">Fra</label>
+						<input class="rounded-r-md" type="text" name="from" id="from" value="1" autocomplete="off">
 					{/if}
 
 				</div>
 				<div class="inline-flex">
 					{#if gameType === "books" }
-						<label>Med</label>
+						<label class="rounded-l-md">Med</label>
 						<input type="text" name="book_limit" id="book_limit" value="100" autocomplete="off">
-						<label>Nummer</label>
+						<label class="rounded-r-md">Nummer</label>
 					{:else}
-						<label>Til</label>
-						<input type="text" name="limit" id="limit" value="100" autocomplete="off">
+						<label class="rounded-l-md">Til</label>
+						<input class="rounded-r-md" type="text" name="limit" id="limit" value="100" autocomplete="off">
 					{/if}
 
 				</div>
@@ -184,7 +196,6 @@
 	.screen {
 		color: white;
 		font-size: 1em;
-		max-width: 1300px;
 		margin: auto;
 		text-align: left;
 	}
@@ -240,6 +251,10 @@
 			font-weight: bold;
 			font-family: "proxima-nova", sans-serif;
 			appearance: none;
+
+			&:focus {
+				outline-color: var(--main-900);			
+			}
 		}
 	}
 
@@ -274,6 +289,7 @@
 		transform: translateX(100%);
 		position: absolute;
 		width: 20%;
+		min-width: 300px;
 		top: 0;
 		bottom: 0;
 		right: 0;

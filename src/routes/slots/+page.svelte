@@ -13,6 +13,7 @@
 	let preAnimation = $state(true);
 	
 	let columnsCount = $state(3)
+	let rowCount = $state(5)
 	let totalDuration = $state(5);
 	let totalFrame = $derived(totalDuration * 60)
 	
@@ -107,9 +108,9 @@
 	}
 </script>
 
-<div class="flex justify-center overflow-hidden max-w-screen-lg mx-auto w-full">
+<div class="top-container flex justify-center overflow-hidden max-w-screen-lg mx-auto w-full">
 	{#each [...Array(columnsCount).keys()] as number}
-		<div class="slot-container" data-pre-animation={preAnimation} style="--count: 10;">
+		<div class="slot-container" data-pre-animation={preAnimation} style="--row-count: {rowCount};">
 			<ul>
 				{#each [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] as number}
 					<li>{number}</li>
@@ -134,6 +135,9 @@
 	<label>Slots</label>
 	<input id="columnsCountInput" type="number" min="1" max="6" bind:value={columnsCount}>
 	<br>
+	<label>Row count</label>
+	<input id="columnsCountInput" type="number" min="1" step="2" max="9" bind:value={rowCount}>
+	<br>
 	<label>Animation Length</label>
 	<input id="animationLengthInput" type="number" min="2" max="15" bind:value={totalDuration}> (seconds)
 	<br>
@@ -155,12 +159,63 @@
 {/if}
 
 <style>
+	:global(.app[data-scale="1x"] .top-container) {
+		--font-size: 5rem;
+
+	}
+	:global(.app[data-scale="2x"] .top-container) {
+		--font-size: 7rem;
+
+	}
+	:global(.app[data-scale="3x"] .top-container) {
+		--font-size: 10rem;
+		max-width: 300px;
+	}
+	:global(.app[data-scale="1x"] .slot-container) {
+		max-width: 200px;
+
+	}
+	:global(.app[data-scale="2x"] .slot-container) {
+		max-width: 250px;
+
+	}
+	:global(.app[data-scale="3x"] .slot-container) {
+		max-width: 300px;
+	}
+
+	.top-container {
+		--font-size: 5rem;
+		position: relative;
+
+		&::after {
+			z-index: 10;
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: calc(2 * var(--font-size));
+			background-image: linear-gradient(to top, rgba(255, 255, 255, 0), var(--main-600) 90%);
+		}
+
+		&::before {
+			z-index: 10;
+			content: "";
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: calc(2 * var(--font-size));
+			background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--main-600) 90%);
+		}
+	}
+
 	.slot-container {
         position: relative;
         width: 100%;
         overflow: hidden;
         color: var(--secondary-white);
-        max-height: calc(5rem * 9);	
+        max-height: calc((calc(var(--font-size)/3) + var(--font-size)) * var(--row-count));	
 		max-width: 200px;
         display: flex;
         flex-direction: column;
@@ -169,7 +224,7 @@
             content: "";
             position: absolute;
             width: 100%;
-            top: calc(50% - 2.5rem);
+            top: calc(50% - calc((calc(var(--font-size) / 6) + var(--font-size)) / 2));
             border: 2px solid var(--main-700);
         }
 
@@ -177,7 +232,7 @@
             content: "";
             position: absolute;
             width: 100%;
-            bottom: calc(50% - 2.5rem);
+            bottom: calc(50% - calc((calc(var(--font-size) / 6) + var(--font-size)) / 2));
             border: 2px solid var(--main-700);
         }
 
@@ -190,9 +245,9 @@
             list-style: none;
 
             li {
-                font-size: 4rem;
+                font-size: var(--font-size);
                 line-height: 1em;
-                padding: 0.5rem 0;
+                padding: calc(var(--font-size)/6) 0;
                 text-align: center;
             }
         }
