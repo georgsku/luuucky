@@ -11,7 +11,8 @@
 
     onMount(() => {
         current_color = localStorage.getItem("bg_color_index", 0)
-        document.body.dataset.colorScheme = bg_colors[current_color]
+        document.body.dataset.colorScheme = bg_colors[current_color || 0]
+        document.querySelector(".app").dataset.scale = localStorage.getItem("scale", 1) + "x"
     })
 
     function changeColors() {
@@ -48,7 +49,9 @@
 
     function zoom() {
         scale = (scale) % 3 + 1
+        console.log(scale);
         document.querySelector(".app").dataset.scale = scale + "x"
+        localStorage.setItem("scale", scale);
     }
 
 </script>
@@ -94,9 +97,11 @@
 		padding: 12px;
         height: 84px;
         text-align: center;
+        z-index: 100;
 
         svg {
             color: var(--main-50);
+            cursor: pointer;
         }
 
         .box {

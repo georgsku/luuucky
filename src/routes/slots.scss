@@ -1,0 +1,96 @@
+.faded-container {
+	position: absolute;
+	inset: 0;
+
+	&::after {
+		z-index: 10;
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 30%;
+		background-image: linear-gradient(to top, rgba(255, 255, 255, 0), var(--main-600) 90%);
+	}
+
+	&::before {
+		z-index: 10;
+		content: "";
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 30%;
+		background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0), var(--main-600) 90%);
+	}
+}
+
+.slot-container:first-of-type {
+    &::after {
+        border-top-left-radius: 999px;
+        border-bottom-left-radius: 999px;
+    }
+
+    &::before {
+        border-top-left-radius: 999px;
+        border-bottom-left-radius: 999px;
+    }
+}
+.slot-container:last-of-type {
+    &::after {
+        border-top-right-radius: 999px;
+        border-bottom-right-radius: 999px;
+    }
+
+    &::before {
+        border-top-right-radius: 999px;
+        border-bottom-right-radius: 999px;
+    }
+}
+
+.slot-container {
+    --line-height: 1.5;
+    --li-height: calc(var(--font-size) * var(--line-height));
+    
+    position: relative;
+    width: 100%;
+    color: var(--seconday-white);
+    max-height: calc(var(--li-height) * var(--li-count));	
+    display: flex;
+    flex-direction: column;
+
+    &::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        top: calc(50% - calc(var(--li-height) / 2 + 1rem) );
+        border: calc(var(--font-size) / 20) solid var(--main-700);
+    }
+
+    &::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        bottom: calc(50% - calc(var(--li-height) / 2 + 1rem) );
+        border: calc(var(--font-size) / 20) solid var(--main-700);
+    }
+
+    &[data-pre-animation="true"] ul {
+        animation: scroll 2s linear infinite;
+    }
+
+    ul {
+        all: unset;
+        display: flex;
+        flex-direction: column;
+        inset: 0;
+        place-content: center start;
+        list-style: none;
+
+        li {
+            font-size: var(--font-size);
+            line-height: var(--line-height);
+            text-align: center;
+        }
+    }
+}
