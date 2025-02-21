@@ -43,7 +43,7 @@
 	let containerData;
 	let inAnimation = false;
 	let ticketPool = []
-	let winnerElement;
+	let winner;
 
 	let listData = $derived.by(() => {
 		const navnList = csvData.map(item => item.name);
@@ -104,9 +104,11 @@
 
 	function start() {
 		if (inAnimation) return;
-		if (winnerElement) {
-			winnerElement.classList.remove("animate__tada")
-			winnerElement = null
+		if (winner) {
+			Array.from(document.querySelectorAll(`li[data-name=${winner}]`)).forEach(el => {
+				el.classList.remove("animate__tada")
+			})
+			winner = null
 		}
 
 		inAnimation = true;
@@ -131,13 +133,13 @@
 	}
 
 	function spin(containerData) {
-		const winner = drawWinner()
+		winner = drawWinner()
 		
 		const elements = Array.from(Array.from(containerData.uls)[0].querySelectorAll("li"))
-		winnerElement = elements.find(el => el.dataset.name === winner)
+		const winnerElement = elements.find(el => el.dataset.name === winner)
 		const winnerIndex = elements.indexOf(winnerElement) - 1
 		const offset = (Math.floor(totalRows / 2) - 1)/ elements.length
-		
+
 		containerData.randomTransform += (1 - winnerIndex / elements.length + offset) * 100;
 		
 		anim(containerData)
@@ -151,8 +153,14 @@
 		if (currentTime * totalDuration >= totalDuration) {
 			cancelAnimationFrame(containerData.frame);
 			inAnimation = false;
-			fireConfetti = true
-			winnerElement.classList.add("animate__tada")
+			
+			if (winningAnimation) {
+				fireConfetti = true
+				
+				Array.from(document.querySelectorAll(`li[data-name=${winner}]`)).forEach(el => {
+					el.classList.add("animate__tada")
+				})
+			}
 		} else {
 			let bezier = easing(containerData.currentTime)
 			let currentValue = 100 - (bezier * randomTransform % 100); 
@@ -168,10 +176,10 @@
 
 	function applySettingsToStates(settings) {
 		if (settings.length === 0) return
-		totalDuration = settings.totalDuration
-		winningAnimation = settings.winningAnimation
-		totalRounds = settings.totalRounds
-		totalRows = settings.totalRows
+		totalDuration = settings.totalDuration || 5
+		winningAnimation = settings.winningAnimation || true
+		totalRounds = settings.totalRounds || 10
+		totalRows = settings.totalRows || 7
 	}
 
 
@@ -193,9 +201,9 @@
 	}
 </script>
 
-<div class="list grow flex flex-col justify-center overflow-hidden max-w-screen-lg mx-auto w-full max-h-[100vh]">
+<div class="list grow flex flex-col justify-center overflow-hidden max-w-screen-2xl	mx-auto w-full max-h-[100vh]">
 	{#if listData.length > 0}
-		<div class="overflow-hidden flex flex-col justify-center">
+		<div class="overflow-hidden flex flex-col justify-center w-fit m-auto">
 			<div class="slot-container" data-pre-animation={preAnimation} style="--li-count:{totalRows};">
 				<div class="faded-container"></div>
 				{#if listData.length > 0}

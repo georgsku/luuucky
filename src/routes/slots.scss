@@ -58,6 +58,7 @@
     max-height: calc(var(--li-height) * var(--li-count));	
     display: flex;
     flex-direction: column;
+    user-select: none;
 
     &::after {
         content: "";
@@ -91,6 +92,9 @@
             font-size: var(--font-size);
             line-height: var(--line-height);
             text-align: center;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;        
         }
     }
 }

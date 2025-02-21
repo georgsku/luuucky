@@ -49,7 +49,6 @@
 
     function zoom() {
         scale = (scale) % 3 + 1
-        console.log(scale);
         document.querySelector(".app").dataset.scale = scale + "x"
         localStorage.setItem("scale", scale);
     }
