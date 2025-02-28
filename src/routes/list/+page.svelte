@@ -292,6 +292,11 @@
 
 	.list {
 		--font-size: 4rem;
+
+		li {
+			padding: 0 3rem;
+			min-width: 400px;
+		}
 	}
 
 </style>
