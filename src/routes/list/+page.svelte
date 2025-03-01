@@ -105,7 +105,7 @@
 	function start() {
 		if (inAnimation) return;
 		if (winner) {
-			Array.from(document.querySelectorAll(`li[data-name=${winner}]`)).forEach(el => {
+			Array.from(document.querySelectorAll(`li[data-name='${winner}']`)).forEach(el => {
 				el.classList.remove("animate__tada")
 			})
 			winner = null
@@ -137,6 +137,7 @@
 		
 		const elements = Array.from(Array.from(containerData.uls)[0].querySelectorAll("li"))
 		const winnerElement = elements.find(el => el.dataset.name === winner)
+		console.log(winner);
 		const winnerIndex = elements.indexOf(winnerElement) - 1
 		const offset = (Math.floor(totalRows / 2) - 1)/ elements.length
 
@@ -157,7 +158,7 @@
 			if (winningAnimation) {
 				fireConfetti = true
 				
-				Array.from(document.querySelectorAll(`li[data-name=${winner}]`)).forEach(el => {
+				Array.from(document.querySelectorAll(`li[data-name='${winner}']`)).forEach(el => {
 					el.classList.add("animate__tada")
 				})
 			}
